@@ -14,19 +14,19 @@ object ShikiFetcher: Fetcher {
     private val jsonFormat = Json { ignoreUnknownKeys = true }
     private val client = HttpClient(CIO)
 
-    override suspend fun mangaList(): Array<ShikiMangaEntity> {
+    override suspend fun mangaList(): List<ShikiMangaEntity> {
         val url = Settings.shikiMangaUrl()
         val response = client.get(url)
         val content = response.bodyAsText()
 
-        return jsonFormat.decodeFromString<Array<ShikiMangaEntity>>(content)
+        return jsonFormat.decodeFromString<List<ShikiMangaEntity>>(content)
     }
 
-    override suspend fun animeList(): Array<ShikiAnimeEntity> {
+    override suspend fun animeList(): List<ShikiAnimeEntity> {
         val url = Settings.shikiAnimeUrl()
         val response = client.get(url)
         val content = response.bodyAsText()
 
-        return jsonFormat.decodeFromString<Array<ShikiAnimeEntity>>(content)
+        return jsonFormat.decodeFromString<List<ShikiAnimeEntity>>(content)
     }
 }
