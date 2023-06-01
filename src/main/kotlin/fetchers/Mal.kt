@@ -1,9 +1,7 @@
 package com.example.anidiff_jvm.fetchers
 
-import com.example.anidiff_jvm.entities.AnimeEntity
 import com.example.anidiff_jvm.entities.MalAnimeEntity
 import com.example.anidiff_jvm.entities.MalMangaEntity
-import com.example.anidiff_jvm.entities.MangaEntity
 import com.example.anidiff_jvm.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*

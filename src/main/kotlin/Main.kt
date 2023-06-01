@@ -1,6 +1,8 @@
 package com.example.anidiff_jvm
 
+import com.example.anidiff_jvm.fetchers.Fetcher
 import com.example.anidiff_jvm.fetchers.MalFetcher
+import com.example.anidiff_jvm.fetchers.ShikiFetcher
 import com.example.anidiff_jvm.settings.Settings
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
