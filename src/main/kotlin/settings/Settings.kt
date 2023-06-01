@@ -4,15 +4,19 @@ object Settings {
     private const val shikiPrefix = "https://shikimori.me"
     private const val malPrefix = "https://myanimelist.net"
 
-    private lateinit var shikiName: String
-    private lateinit var malName: String
+    private var shikiName: String = ""
+    private var malName: String = ""
 
     fun init() {
-        println("Enter Shikimori Name:")
-        shikiName = readValue("SHIKI_USER")
+        if (shikiName.isBlank()) {
+            println("Enter Shikimori Name:")
+            shikiName = readValue("SHIKI_NAME")
+        }
 
-        println("Enter MyAnimelist Name:")
-        malName = readValue("MAL_USER")
+        if (malName.isBlank()) {
+            println("Enter MyAnimelist Name:")
+            malName = readValue("MAL_NAME")
+        }
     }
 
     fun shikiMangaUrl(): String {
