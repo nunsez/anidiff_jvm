@@ -9,7 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-2
+
 object ShikiFetcher {
     private val jsonFormat = Json { ignoreUnknownKeys = true }
     private val client = HttpClient(CIO)
