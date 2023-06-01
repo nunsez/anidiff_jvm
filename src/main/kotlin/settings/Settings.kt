@@ -31,6 +31,10 @@ object Settings {
         return "$malPrefix/animelist/$malName/load.json?offset=${offset}"
     }
 
+    fun malProfileUrl(): String {
+        return "$malPrefix/profile/$malName"
+    }
+
     override fun toString(): String {
         return """
             Settings(shikiPrefix="$shikiPrefix", shikiName="$shikiName", malPrefix="$malPrefix", malName="$malName")
