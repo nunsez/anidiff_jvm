@@ -9,10 +9,10 @@ object Settings {
 
     fun init() {
         println("Enter Shikimori Name:")
-        shikiName = readln()
+        shikiName = readValue("SHIKI_USER")
 
         println("Enter MyAnimelist Name:")
-        malName = readln()
+        malName = readValue("MAL_USER")
     }
 
     fun shikiMangaUrl(): String {
@@ -39,5 +39,14 @@ object Settings {
         return """
             Settings(shikiPrefix="$shikiPrefix", shikiName="$shikiName", malPrefix="$malPrefix", malName="$malName")
         """.trimIndent()
+    }
+
+    private fun readValue(name: String): String {
+        val envValue = System.getenv(name)
+
+        return when {
+            envValue.isNullOrBlank() -> readln()
+            else -> envValue
+        }
     }
 }
