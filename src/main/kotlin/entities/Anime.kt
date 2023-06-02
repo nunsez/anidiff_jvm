@@ -14,7 +14,7 @@ abstract class AnimeEntity : Entity {
                 && score == other.score
     }
 
-    override fun equals(other: Any?): Boolean {
+    final override fun equals(other: Any?): Boolean {
         return when (other) {
             is AnimeEntity -> equals(other)
             else -> false

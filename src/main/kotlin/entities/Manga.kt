@@ -16,7 +16,7 @@ abstract class MangaEntity : Entity {
                 && score == other.score
     }
 
-    override fun equals(other: Any?): Boolean {
+     final override fun equals(other: Any?): Boolean {
         return when (other) {
             is MangaEntity -> equals(other)
             else -> false
