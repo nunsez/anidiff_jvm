@@ -10,7 +10,6 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.io.File
 import java.lang.RuntimeException
 import kotlin.math.ceil
 
@@ -32,7 +31,6 @@ object MalFetcher: Fetcher {
             return field
         }
 
-
     override suspend fun mangaList(): List<MalMangaEntity> {
         val mangaTotal = getMangaTotal()
         val offsets = offsets(mangaTotal)
@@ -41,7 +39,7 @@ object MalFetcher: Fetcher {
     }
 
     override suspend fun animeList(): List<MalAnimeEntity> {
-        val animeTotal = getMangaTotal()
+        val animeTotal = getAnimeTotal()
         val offsets = offsets(animeTotal)
 
         return offsets.flatMap { fetchAnimeChunk(it) }
@@ -74,10 +72,6 @@ object MalFetcher: Fetcher {
         return valueToInt(value)
     }
 
-    fun valueToInt(value: String): Int {
-        return value.replace(exceptDigitsRegex, "").toInt()
-    }
-
     fun getMangaTotal(): Int {
         val matchResult = mangaTotalRegex.find(homePage)
         val value = matchResult
@@ -89,20 +83,12 @@ object MalFetcher: Fetcher {
         return valueToInt(value)
     }
 
-    fun fetchHomePage(): String {
-        return runBlocking {
-            val file = File("mal_profile.html")
-            return@runBlocking file.readText()
-        }
-    }
-
-    fun fetchHomePage2() {
+    private fun fetchHomePage(): String {
         val url = Settings.malProfileUrl()
 
-        runBlocking {
+        return runBlocking {
             val response = client.get(url)
-            val content = response.bodyAsText()
-            this@MalFetcher.homePage = content
+            return@runBlocking response.bodyAsText()
         }
     }
 
@@ -110,5 +96,9 @@ object MalFetcher: Fetcher {
         val chunkSize = 300
         val iterations = ceil(total / chunkSize.toDouble()).toInt()
         return List(iterations) { it * chunkSize }
+    }
+
+    private fun valueToInt(value: String): Int {
+        return value.replace(exceptDigitsRegex, "").toInt()
     }
 }
