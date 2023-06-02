@@ -11,7 +11,10 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object ShikiFetcher: Fetcher {
-    private val jsonFormat = Json { ignoreUnknownKeys = true }
+    private val jsonFormat = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
     private val client = HttpClient(CIO)
 
     override suspend fun mangaList(): List<ShikiMangaEntity> {

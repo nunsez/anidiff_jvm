@@ -15,7 +15,10 @@ import java.lang.RuntimeException
 import kotlin.math.ceil
 
 object MalFetcher: Fetcher {
-    private val jsonFormat = Json { ignoreUnknownKeys = true }
+    private val jsonFormat = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
     private val client = HttpClient(CIO)
     private val exceptDigitsRegex = Regex("""\D""")
     private val animeTotalRegex = Regex("""<a.+?class=".*?anime.*?">Completed</a><span.*?>([\d,]{1,7})</span>""")
@@ -56,7 +59,7 @@ object MalFetcher: Fetcher {
         val url = Settings.malMangaUrl(offset)
         val response = client.get(url)
         val content = response.bodyAsText()
-        println(content)
+
         return jsonFormat.decodeFromString<List<MalMangaEntity>>(content)
     }
 
