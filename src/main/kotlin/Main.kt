@@ -6,7 +6,7 @@ import com.example.anidiff_jvm.fetchers.ShikiFetcher
 import com.example.anidiff_jvm.settings.Settings
 import kotlinx.coroutines.runBlocking
 
-fun main(args: Array<String>) {
+fun main() {
     Settings.init()
     println(Settings)
 
