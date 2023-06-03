@@ -31,8 +31,9 @@ class MalFetcher(
     private var homePage: String = ""
         get() {
             if (field == "") {
-                field = fetchHomePage()
+                field = runBlocking { fetchHomePage() }
             }
+
             return field
         }
 
@@ -41,7 +42,7 @@ class MalFetcher(
         val offsets = offsets(mangaTotal)
 
         val jobs = runBlocking {
-            return@runBlocking offsets.map {
+            offsets.map {
                 async(malCoroutineContext) { fetchMangaChunk(it) }
             }
         }
@@ -55,7 +56,7 @@ class MalFetcher(
         val offsets = offsets(animeTotal)
 
         val jobs = runBlocking {
-            return@runBlocking offsets.map {
+            offsets.map {
                 async(malCoroutineContext) { fetchAnimeChunk(it) }
             }
         }
@@ -81,25 +82,22 @@ class MalFetcher(
             ?.value
             ?: throw RuntimeException(message)
 
-        return  valueToInt(value)
+        return valueToInt(value)
     }
 
     private fun valueToInt(value: String): Int {
         return value.replace(exceptDigitsRegex, "").toInt()
     }
 
-    private fun fetchHomePage(): String {
+    private suspend fun fetchHomePage(): String {
         val url = settings.malProfileUrl()
-
-        return runBlocking {
-            val response = client.get(url)
-            return@runBlocking response.bodyAsText()
-        }
+        return client.get(url).bodyAsText()
     }
 
     private fun offsets(total: Int): List<Int> {
         val chunkSize = 300
         val iterations = ceil(total / chunkSize.toDouble()).toInt()
+
         return List(iterations) { it * chunkSize }
     }
 }
