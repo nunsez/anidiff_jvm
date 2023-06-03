@@ -25,8 +25,6 @@ class ComparatorTest {
         val comparator = Comparator(malList = listOf(mal), shikiList = listOf(shiki))
         val result = comparator.compare()
 
-        println(shiki.equals(mal))
-
         assertEquals(listOf(mal), result)
     }
 
