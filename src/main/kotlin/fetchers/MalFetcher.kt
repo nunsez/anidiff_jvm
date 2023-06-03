@@ -4,27 +4,29 @@ import com.example.anidiff_jvm.entities.MalAnimeEntity
 import com.example.anidiff_jvm.entities.MalMangaEntity
 import com.example.anidiff_jvm.settings.Settings
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.*
 import kotlin.RuntimeException
 import kotlin.math.ceil
 
 class MalFetcher(
-    override val client: HttpClient = HttpClient(CIO),
+    override val client: HttpClient = defaultHttpClient(),
     override val settings: Settings = Settings
 ): Fetcher {
-    private val jsonFormat = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
-
     private val exceptDigitsRegex = Regex("""\D""")
-    private val animeTotalRegex = Regex("""<a.+?class=".*?anime.*?">Completed</a><span.*?>([\d,]{1,7})</span>""")
-    private val mangaTotalRegex = Regex("""<a.+?class=".*?manga.*?">Completed</a><span.*?>([\d,]{1,7})</span>""")
+    private val animeTotalRegex = Regex(
+        """Anime.Stats.+?Total.Entries</span><span.*?>([\d,]{1,7})</span>""",
+        RegexOption.DOT_MATCHES_ALL
+    )
+    private val mangaTotalRegex = Regex(
+        """Manga.Stats.+?Total.Entries</span><span.*?>([\d,]{1,7})</span>""",
+        RegexOption.DOT_MATCHES_ALL
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val malCoroutineContext = Dispatchers.Default.limitedParallelism(4)
 
     private var homePage: String = ""
         get() {
@@ -38,32 +40,37 @@ class MalFetcher(
         val mangaTotal = getTotalValue(mangaTotalRegex, "No manga total")
         val offsets = offsets(mangaTotal)
 
-        return offsets.flatMap { fetchMangaChunk(it) }
+        val jobs = runBlocking {
+            return@runBlocking offsets.map {
+                async(malCoroutineContext) { fetchMangaChunk(it) }
+            }
+        }
+
+        return jobs.awaitAll().flatten()
     }
+
 
     override suspend fun animeList(): List<MalAnimeEntity> {
         val animeTotal = getTotalValue(animeTotalRegex, "No anime total")
         val offsets = offsets(animeTotal)
 
-        return offsets.flatMap { fetchAnimeChunk(it) }
+        val jobs = runBlocking {
+            return@runBlocking offsets.map {
+                async(malCoroutineContext) { fetchAnimeChunk(it) }
+            }
+        }
+
+        return jobs.awaitAll().flatten()
     }
 
-    suspend fun fetchAnimeChunk(offset: Int): List<MalAnimeEntity> {
+    private suspend fun fetchAnimeChunk(offset: Int): List<MalAnimeEntity> {
         val url = settings.malAnimeUrl(offset)
-        val content = fetchChunk(url)
-
-        return jsonFormat.decodeFromString<List<MalAnimeEntity>>(content)
+        return client.get(url).body()
     }
 
-    suspend fun fetchMangaChunk(offset: Int): List<MalMangaEntity> {
+    private suspend fun fetchMangaChunk(offset: Int): List<MalMangaEntity> {
         val url = settings.malMangaUrl(offset)
-        val content = fetchChunk(url)
-
-        return jsonFormat.decodeFromString<List<MalMangaEntity>>(content)
-    }
-
-    private suspend fun fetchChunk(url: String): String {
-        return client.get(url).bodyAsText()
+        return client.get(url).body()
     }
 
     private fun getTotalValue(regex: Regex, message: String): Int {
