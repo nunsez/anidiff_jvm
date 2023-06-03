@@ -1,6 +1,8 @@
 package com.example.anidiff_jvm
 
-import com.example.anidiff_jvm.comparsion.Comparator
+import com.example.anidiff_jvm.comparison.compareEntityLists
+import com.example.anidiff_jvm.entities.AnimeEntity
+import com.example.anidiff_jvm.entities.MangaEntity
 import com.example.anidiff_jvm.fetchers.MalFetcher
 import com.example.anidiff_jvm.fetchers.ShikiFetcher
 import com.example.anidiff_jvm.settings.Settings
@@ -17,8 +19,8 @@ fun main() {
         val malManga = MalFetcher.mangaList()
         val shikiManga = ShikiFetcher.mangaList()
 
-        val animeDiff = Comparator(malList = malAnime, shikiList = shikiAnime).compare()
-        val mangaDiff = Comparator(malList = malManga, shikiList = shikiManga).compare()
+        val animeDiff: List<AnimeEntity> = compareEntityLists(malAnime, shikiAnime)
+        val mangaDiff: List<MangaEntity> = compareEntityLists(malManga, shikiManga)
 
         println("Anime Diff:")
         animeDiff.forEach(::println)
