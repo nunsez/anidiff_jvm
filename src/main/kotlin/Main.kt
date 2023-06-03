@@ -12,12 +12,15 @@ fun main() {
     Settings.init()
     println(Settings)
 
-    runBlocking {
-        val malAnime = MalFetcher.animeList()
-        val shikiAnime = ShikiFetcher.animeList()
+    val malFetcher = MalFetcher()
+    val shikiFetcher = ShikiFetcher()
 
-        val malManga = MalFetcher.mangaList()
-        val shikiManga = ShikiFetcher.mangaList()
+    runBlocking {
+        val malAnime = malFetcher.animeList()
+        val shikiAnime = shikiFetcher.animeList()
+
+        val malManga = malFetcher.mangaList()
+        val shikiManga = shikiFetcher.mangaList()
 
         val animeDiff: List<AnimeEntity> = compareEntityLists(malAnime, shikiAnime)
         val mangaDiff: List<MangaEntity> = compareEntityLists(malManga, shikiManga)

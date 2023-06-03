@@ -10,15 +10,17 @@ import io.ktor.client.statement.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-object ShikiFetcher: Fetcher {
+class ShikiFetcher(
+    override val client: HttpClient = HttpClient(CIO),
+    override val settings: Settings = Settings
+): Fetcher {
     private val jsonFormat = Json {
         ignoreUnknownKeys = true
         isLenient = true
     }
-    private val client = HttpClient(CIO)
 
     override suspend fun mangaList(): List<ShikiMangaEntity> {
-        val url = Settings.shikiMangaUrl()
+        val url = settings.shikiMangaUrl()
         val response = client.get(url)
         val content = response.bodyAsText()
 
@@ -26,7 +28,7 @@ object ShikiFetcher: Fetcher {
     }
 
     override suspend fun animeList(): List<ShikiAnimeEntity> {
-        val url = Settings.shikiAnimeUrl()
+        val url = settings.shikiAnimeUrl()
         val response = client.get(url)
         val content = response.bodyAsText()
 

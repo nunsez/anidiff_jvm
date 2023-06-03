@@ -10,15 +10,18 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.lang.RuntimeException
+import kotlin.RuntimeException
 import kotlin.math.ceil
 
-object MalFetcher: Fetcher {
+class MalFetcher(
+    override val client: HttpClient = HttpClient(CIO),
+    override val settings: Settings = Settings
+): Fetcher {
     private val jsonFormat = Json {
         ignoreUnknownKeys = true
         isLenient = true
     }
-    private val client = HttpClient(CIO)
+
     private val exceptDigitsRegex = Regex("""\D""")
     private val animeTotalRegex = Regex("""<a.+?class=".*?anime.*?">Completed</a><span.*?>([\d,]{1,7})</span>""")
     private val mangaTotalRegex = Regex("""<a.+?class=".*?manga.*?">Completed</a><span.*?>([\d,]{1,7})</span>""")
@@ -32,59 +35,54 @@ object MalFetcher: Fetcher {
         }
 
     override suspend fun mangaList(): List<MalMangaEntity> {
-        val mangaTotal = getMangaTotal()
+        val mangaTotal = getTotalValue(mangaTotalRegex, "No manga total")
         val offsets = offsets(mangaTotal)
 
         return offsets.flatMap { fetchMangaChunk(it) }
     }
 
     override suspend fun animeList(): List<MalAnimeEntity> {
-        val animeTotal = getAnimeTotal()
+        val animeTotal = getTotalValue(animeTotalRegex, "No anime total")
         val offsets = offsets(animeTotal)
 
         return offsets.flatMap { fetchAnimeChunk(it) }
     }
 
     suspend fun fetchAnimeChunk(offset: Int): List<MalAnimeEntity> {
-        val url = Settings.malAnimeUrl(offset)
-        val response = client.get(url)
-        val content = response.bodyAsText()
+        val url = settings.malAnimeUrl(offset)
+        val content = fetchChunk(url)
 
         return jsonFormat.decodeFromString<List<MalAnimeEntity>>(content)
     }
 
     suspend fun fetchMangaChunk(offset: Int): List<MalMangaEntity> {
-        val url = Settings.malMangaUrl(offset)
-        val response = client.get(url)
-        val content = response.bodyAsText()
+        val url = settings.malMangaUrl(offset)
+        val content = fetchChunk(url)
 
         return jsonFormat.decodeFromString<List<MalMangaEntity>>(content)
     }
 
-    fun getAnimeTotal(): Int {
-        val matchResult = animeTotalRegex.find(homePage)
-        val value = matchResult
-            ?.groups
-            ?.get(1)
-            ?.value
-            ?: throw RuntimeException("No anime total")
-
-        return valueToInt(value)
+    private suspend fun fetchChunk(url: String): String {
+        return client.get(url).bodyAsText()
     }
 
-    fun getMangaTotal(): Int {
-        val matchResult = mangaTotalRegex.find(homePage)
+    private fun getTotalValue(regex: Regex, message: String): Int {
+        val matchResult = regex.find(homePage)
         val value = matchResult
             ?.groups
             ?.get(1)
             ?.value
-            ?: throw RuntimeException("No manga total")
+            ?: throw RuntimeException(message)
 
-        return valueToInt(value)
+        return  valueToInt(value)
+    }
+
+    private fun valueToInt(value: String): Int {
+        return value.replace(exceptDigitsRegex, "").toInt()
     }
 
     private fun fetchHomePage(): String {
-        val url = Settings.malProfileUrl()
+        val url = settings.malProfileUrl()
 
         return runBlocking {
             val response = client.get(url)
@@ -96,9 +94,5 @@ object MalFetcher: Fetcher {
         val chunkSize = 300
         val iterations = ceil(total / chunkSize.toDouble()).toInt()
         return List(iterations) { it * chunkSize }
-    }
-
-    private fun valueToInt(value: String): Int {
-        return value.replace(exceptDigitsRegex, "").toInt()
     }
 }
