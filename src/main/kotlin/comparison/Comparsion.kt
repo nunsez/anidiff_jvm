@@ -18,5 +18,5 @@ private fun <T : Entity> getDiff(list1: List<T>, list2: List<T>): List<T> {
 private fun <T : Entity> compare(entity: T, entities: Map<Int, T>): T? {
     val otherEntity = entities[entity.id]
 
-    return if (entity == otherEntity) null else entity
+    return if (entity.isEqual(otherEntity)) null else entity
 }

@@ -4,21 +4,17 @@ import com.example.anidiff_jvm.serializers.MalStatusSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Suppress("EqualsOrHashCode")
 abstract class MangaEntity : Entity {
     abstract val chaptersRead: Int
     abstract val volumesRead: Int
 
-    fun equals(other: MangaEntity): Boolean {
-        return chaptersRead == other.chaptersRead
-                && volumesRead == other.volumesRead
-                && status == other.status
-                && score == other.score
-    }
-
-     final override fun equals(other: Any?): Boolean {
+    override fun isEqual(other: Entity?): Boolean {
         return when (other) {
-            is MangaEntity -> equals(other)
+            is MangaEntity -> {
+                super.isEqual(other)
+                        && chaptersRead == other.chaptersRead
+                        && volumesRead == other.volumesRead
+            }
             else -> false
         }
     }

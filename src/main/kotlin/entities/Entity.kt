@@ -20,9 +20,20 @@ enum class EntityStatus {
     @SerialName("planned")
     Planned
 }
+
 interface Entity {
     val id: Int
     val title: String
     val status: EntityStatus
     val score: Int
+
+    fun isEqual(other: Entity?) : Boolean {
+        return when (other) {
+            is Entity -> {
+                status == other.status
+                        && score == other.score
+            }
+            else -> false
+        }
+    }
 }

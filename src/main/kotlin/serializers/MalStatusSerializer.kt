@@ -31,6 +31,7 @@ object MalStatusSerializer : KSerializer<EntityStatus> {
             EntityStatus.Dropped -> 4
             EntityStatus.Planned -> 6
         }
+
         encoder.encodeInt(status)
     }
 }

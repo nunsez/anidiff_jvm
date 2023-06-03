@@ -4,19 +4,15 @@ import com.example.anidiff_jvm.serializers.MalStatusSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Suppress("EqualsOrHashCode")
 abstract class AnimeEntity : Entity {
     abstract val episodesWatched: Int
 
-    fun equals(other: AnimeEntity): Boolean {
-        return episodesWatched == other.episodesWatched
-                && status == other.status
-                && score == other.score
-    }
-
-    final override fun equals(other: Any?): Boolean {
+    override fun isEqual(other: Entity?): Boolean {
         return when (other) {
-            is AnimeEntity -> equals(other)
+            is AnimeEntity -> {
+                super.isEqual(other)
+                        && episodesWatched == other.episodesWatched
+            }
             else -> false
         }
     }
