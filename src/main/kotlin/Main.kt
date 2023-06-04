@@ -10,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 
 fun main() {
     Settings.init()
-    println(Settings)
 
     val malFetcher = MalFetcher()
     val shikiFetcher = ShikiFetcher()
@@ -31,4 +30,7 @@ fun main() {
         println("Manga Diff:")
         mangaDiff.forEach(::println)
     }
+
+    println("Press enter to exit")
+    readln()
 }
