@@ -32,5 +32,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("com.example.anidiff_jvm.MainKt")
 }
