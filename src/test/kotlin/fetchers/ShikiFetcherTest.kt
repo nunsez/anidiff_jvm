@@ -25,7 +25,7 @@ class ShikiFetcherTest {
             ]
         """.trimIndent()
 
-        val client = buildHttpClientMock(responseContent);
+        val client = buildHttpClientMock(responseContent)
         val shikiFetcher = ShikiFetcher(client = client, settings = shikiSettings)
 
         val expected = listOf(
@@ -46,7 +46,7 @@ class ShikiFetcherTest {
             ]
         """.trimIndent()
 
-        val client = buildHttpClientMock(responseContent);
+        val client = buildHttpClientMock(responseContent)
         val shikiFetcher = ShikiFetcher(client = client, settings = shikiSettings)
 
         val expected = listOf(
