@@ -1,6 +1,17 @@
 package com.example.anidiff_jvm.settings
 
-object Settings {
+interface ShikiSettings {
+    fun shikiAnimeUrl(): String
+    fun shikiMangaUrl(): String
+}
+
+interface MalSettings {
+    fun malProfileUrl(): String
+    fun malAnimeUrl(offset: Int): String
+    fun malMangaUrl(offset: Int): String
+}
+
+object Settings : ShikiSettings, MalSettings {
     private const val shikiPrefix = "https://shikimori.me"
     private const val malPrefix = "https://myanimelist.net"
 
@@ -19,23 +30,23 @@ object Settings {
         }
     }
 
-    fun shikiMangaUrl(): String {
+    override fun shikiMangaUrl(): String {
         return "$shikiPrefix/$shikiName/list_export/mangas.json"
     }
 
-    fun shikiAnimeUrl(): String {
+    override fun shikiAnimeUrl(): String {
         return "$shikiPrefix/$shikiName/list_export/animes.json"
     }
 
-    fun malMangaUrl(offset: Int): String {
+    override fun malMangaUrl(offset: Int): String {
         return "$malPrefix/mangalist/$malName/load.json?offset=${offset}"
     }
 
-    fun malAnimeUrl(offset: Int): String {
+    override fun malAnimeUrl(offset: Int): String {
         return "$malPrefix/animelist/$malName/load.json?offset=${offset}"
     }
 
-    fun malProfileUrl(): String {
+    override fun malProfileUrl(): String {
         return "$malPrefix/profile/$malName"
     }
 

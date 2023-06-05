@@ -26,6 +26,7 @@ dependencies {
 
     // Testing
     testImplementation(kotlin("test"))
+    testImplementation("io.ktor:ktor-client-mock:$ktor_version")
 }
 
 tasks.test {

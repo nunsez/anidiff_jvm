@@ -2,6 +2,7 @@ package com.example.anidiff_jvm.fetchers
 
 import com.example.anidiff_jvm.entities.MalAnimeEntity
 import com.example.anidiff_jvm.entities.MalMangaEntity
+import com.example.anidiff_jvm.settings.MalSettings
 import com.example.anidiff_jvm.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -13,7 +14,7 @@ import kotlin.math.ceil
 
 class MalFetcher(
     override val client: HttpClient = defaultHttpClient(),
-    override val settings: Settings = Settings
+    private val settings: MalSettings = Settings
 ): Fetcher {
     private val exceptDigitsRegex = Regex("""\D""")
     private val animeTotalRegex = Regex(
