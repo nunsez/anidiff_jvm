@@ -21,7 +21,7 @@ class ComparisonKtTest {
         val expected = listOf(2, 3)
         val actual = compareEntityLists(mal, shiki).map { it.id }.sorted()
 
-        assertEquals(expected, actual)
+        assertContentEquals(expected, actual)
     }
 
     @Test
@@ -40,6 +40,6 @@ class ComparisonKtTest {
         val expected = listOf(2, 3)
         val actual = compareEntityLists(mal, shiki).map { it.id }.sorted()
 
-        assertEquals(expected, actual)
+        assertContentEquals(expected, actual)
     }
 }
