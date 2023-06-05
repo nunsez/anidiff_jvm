@@ -2,8 +2,7 @@ package comparison
 
 import com.example.anidiff_jvm.comparison.compareEntityLists
 import com.example.anidiff_jvm.entities.*
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import kotlin.test.*
 
 class ComparisonKtTest {
     @Test
